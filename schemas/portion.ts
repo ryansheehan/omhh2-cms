@@ -1,5 +1,12 @@
 import {defineField, defineType} from 'sanity';
 
+export interface Portion {
+    amount: number;
+    unit: string;
+    gramWeight: number;
+
+}
+
 export default defineType({
     name: 'portion',
     title: 'Portion',
@@ -18,13 +25,13 @@ export default defineType({
         }),
 
         defineField({
-            name: 'gram_weight',
+            name: 'gramWeight',
             title: 'Grams',
             type: 'number',
         }),
 
         defineField({
-            name: 'portion_description',
+            name: 'portionDescription',
             title: 'Portion Description',
             type: 'string',
         }),

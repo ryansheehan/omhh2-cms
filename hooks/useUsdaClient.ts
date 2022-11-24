@@ -174,6 +174,9 @@ export function useUsdaClient() {
     }, [state]);
 
     async function fetchFdcId (fdcId: string): Promise<Food | null> {
+        // see if requested food already exists in db
+        
+
         dispatch(fetchAction());
         const url = `https://api.nal.usda.gov/fdc/v1/food/${fdcId}?api_key=${state.apiKey}`;
         console.log('fetching: ', url);

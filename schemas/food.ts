@@ -1,4 +1,5 @@
 import {defineField, defineType} from 'sanity'
+import {FdcIdInput} from '../components/fdcid-input';
 
 export default defineType({
     name: 'food',
@@ -19,6 +20,9 @@ export default defineType({
             title: 'FDC ID',
             type: 'string',
             description: 'FDC ID in the USDA database',
+            components: {
+                input: FdcIdInput,
+            }
         }),
 
         defineField({

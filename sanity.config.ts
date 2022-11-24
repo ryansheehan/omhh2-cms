@@ -2,7 +2,7 @@ import {defineConfig} from 'sanity'
 import {deskTool} from 'sanity/desk'
 import {media} from 'sanity-plugin-media';
 import {visionTool} from '@sanity/vision';
-import {scheduledPublishing} from '@sanity/scheduled-publishing';
+// import {scheduledPublishing} from '@sanity/scheduled-publishing';
 import {schemaTypes} from './schemas'
 
 export default defineConfig({
@@ -14,7 +14,7 @@ export default defineConfig({
 
   plugins: [
     deskTool(),
-    scheduledPublishing(),
+    // scheduledPublishing(),
     media(),
     visionTool({defaultApiVersion: "v2022-11-08"}),
   ],

@@ -4,7 +4,6 @@ export default defineType({
     name: 'food',
     title: 'Food',
     type: 'document',
-    
     fieldsets: [
         { name: 'brand', title: 'Brand Info' }
     ],
@@ -12,15 +11,14 @@ export default defineType({
         defineField({
             name: 'description',
             title: 'Name',
-            type: 'string'
+            type: 'string',            
         }),
 
         defineField({
-            name: 'fdc_id',
+            name: 'fdcid',
             title: 'FDC ID',
-            type: 'number',
+            type: 'string',
             description: 'FDC ID in the USDA database',
-            validation: rule => rule.integer(),
         }),
 
         defineField({

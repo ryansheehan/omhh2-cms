@@ -1,5 +1,11 @@
 import {defineType, defineField} from 'sanity';
 
+export interface Nutrient {
+    name: string;
+    amount: number;
+    unitName: string;
+}
+
 export default defineType({
     type: 'object',
     name: 'nutrient',
@@ -18,7 +24,7 @@ export default defineType({
         }),
 
         defineField({
-            name: 'unit_name',
+            name: 'unitName',
             title: 'Unit',
             type: 'string',
         }),        
@@ -27,7 +33,7 @@ export default defineType({
         select: {
             name: 'name',
             amount: 'amount',
-            unit: 'unit_name',
+            unit: 'unitName',
         },
         prepare: (({name, amount, unit}) => ({
             title: name, 

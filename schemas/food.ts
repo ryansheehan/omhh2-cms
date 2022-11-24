@@ -1,13 +1,36 @@
 import {defineField, defineType} from 'sanity'
 import {FdcIdInput} from '../components/fdcid-input';
 
+import type {Nutrient} from './nutrient';
+export type {Nutrient} from './nutrient';
+import type {Portion} from './portion';
+export type {Portion} from './portion';
+
+
+export type FoodSource = 'custom'
+    | 'agricultural_acquisition'
+    | 'branded_food'
+    | 'experimental_food'
+    | 'foundation_food'
+    | 'market_acquisition'
+    | 'sample_food'
+    | 'sr_legacy_food'
+    | 'sub_sample_food'
+    | 'survey_fndds_food';
+
+export interface Food {
+    description: string;
+    fdcid: string;
+    source: FoodSource;
+    portions: Portion[];
+    nutrients: Nutrient[];
+    usdaPublicationDate: string;
+}
+
 export default defineType({
     name: 'food',
     title: 'Food',
     type: 'document',
-    fieldsets: [
-        { name: 'brand', title: 'Brand Info' }
-    ],
     fields: [
         defineField({
             name: 'description',
@@ -67,48 +90,12 @@ export default defineType({
             }
         }),
 
-        // defineField({
-        //     name: 'brand_owner',
-        //     title: 'Owner',
-        //     type: 'string',
-        //     fieldset: 'brand',
-        // }),
-
-        // defineField({
-        //     name: 'brand_name',
-        //     title: 'Brand Name',
-        //     type: 'string',
-        //     fieldset: 'brand',
-        // }),
-
-        // defineField({
-        //     name: 'subbrand_name',
-        //     title: 'Sub-Brand Name',
-        //     type: 'string',
-        //     fieldset: 'brand',
-        // }),
-
-        // defineField({
-        //     name: 'serving_size',
-        //     title: 'Serving Size',
-        //     type: 'number',
-        //     fieldset: 'brand',
-        // }),
-
-        // defineField({
-        //     name: 'serving_size_unit',
-        //     title: 'Serving Size Unit',
-        //     type: 'string',
-        //     fieldset: 'brand',
-        // }),
-
-        // defineField({
-        //     name: 'household_serving_fulltext',
-        //     title: 'Household Serving',
-        //     type: 'string',
-        //     fieldset: 'brand',
-        // }),
-
+        defineField({
+            name: 'usdaPublicationDate',
+            title: 'USDA Publication Date',
+            type: 'string',
+            hidden: true,
+        }),
     ],
 
     preview: {

@@ -3,8 +3,9 @@ import {defineField, defineType} from 'sanity';
 export interface Portion {
     amount: number;
     unit: string;
+    modifier: string;
     gramWeight: number;
-
+    portionDescription: string;
 }
 
 export default defineType({
@@ -25,6 +26,12 @@ export default defineType({
         }),
 
         defineField({
+            name: 'modifier',
+            title: 'Modifier',
+            type: 'string',
+        }),
+
+        defineField({
             name: 'gramWeight',
             title: 'Grams',
             type: 'number',
@@ -33,12 +40,7 @@ export default defineType({
         defineField({
             name: 'portionDescription',
             title: 'Portion Description',
-            type: 'string',
-        }),
-
-        defineField({
-            name: 'modifier',
-            title: 'Modifier',
+            description: 'override the unit for viewing',
             type: 'string',
         }),
     ],

@@ -24,3 +24,6 @@
 
 # Typescript
 *.tsbuildinfo
+
+# sample data no-need to commit
+sample-usda-food/

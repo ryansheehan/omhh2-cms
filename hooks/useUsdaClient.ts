@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useReducer, useState, createContext } from 'react';
+import { useEffect, useReducer, useState } from 'react';
 import { useSanityClient } from './useSanityClient';
+import type {Food, Nutrient, Portion, FoodSource} from '../schemas/food';
 
 enum ClientState {
     uninitialized = 'uninitialized', 
@@ -53,7 +54,7 @@ type Actions = InitializeAction
 function initializeAction (apiKey: string) { 
     const action: InitializeAction = { type: ActionType.Initialize, apiKey };
     return action;
-};
+}
 
 function fetchAction () {
     const action: FetchAction = { type: ActionType.Fetch };
@@ -95,7 +96,6 @@ interface USDANutrient {
 }
 
 interface USDAPortion {
-    dataType: string;
     amount: number;
     gramWeight: number;
     measureUnit: {
@@ -107,10 +107,51 @@ interface USDAPortion {
 
 interface USDAFood {
     fdcId: number;
+    dataType: string;
     description: string;
     foodNutrients: USDANutrient[];
     foodPortions: USDAPortion[];
     publicationDate: string;
+}
+
+function mapFoodSource(dataType: string): FoodSource {
+    switch(dataType.toLowerCase()) {
+        case 'foundation': return 'foundation_food';
+        case 'survey (fndds)': return 'survey_fndds_food';
+        case 'sr legacy': return 'sr_legacy_food';
+        case 'branded': return 'branded_food';
+        case 'experimental': return 'experimental_food';
+        case 'sample': return 'sample_food';
+        case 'sub sample': return 'sub_sample_food';
+        case 'agricultural acquisition': return 'agricultural_acquisition';
+        case 'market acquisition': return 'market_acquisition';
+    }
+    return 'custom';
+}
+
+function mapFood({fdcId, description, foodNutrients, foodPortions, publicationDate, dataType}: USDAFood) {
+    const food: Food = {
+        fdcid: fdcId.toString(),
+        description,
+        usdaPublicationDate: publicationDate,
+        source: mapFoodSource(dataType),
+        portions: foodPortions.map(({amount, gramWeight, measureUnit, modifier}) => {
+            const portion: Portion = {
+                amount, gramWeight, modifier, 
+                unit: measureUnit.abbreviation,
+                portionDescription: '',
+            };
+            return portion;
+        }),
+        nutrients: foodNutrients.map(({amount, nutrient: nutrientDetail}) => {
+            const {name, unitName} = nutrientDetail;
+            const nutrient: Nutrient = {
+                amount, unitName, name,
+            };
+            return nutrient;
+        }),
+    }
+    return food;
 }
 
 export function useUsdaClient() {
@@ -124,7 +165,7 @@ export function useUsdaClient() {
                 dispatch(initializeAction(apiKey));
             })();            
         }
-    }, []);
+    }, [state.apiKey, sanity]);
     
     const [isBusy, setIsBusy] = useState(true);
 
@@ -132,18 +173,18 @@ export function useUsdaClient() {
         setIsBusy(state.client !== ClientState.ready);
     }, [state]);
 
-    async function fetchFdcId (fdcId: string): Promise<unknown> {
+    async function fetchFdcId (fdcId: string): Promise<Food | null> {
         dispatch(fetchAction());
         const url = `https://api.nal.usda.gov/fdc/v1/food/${fdcId}?api_key=${state.apiKey}`;
         console.log('fetching: ', url);
 
-        let food: unknown | null = null;
+        let food: Food | null = null;
 
         try {
             const res = await fetch(url);
-            const json: USDAFood = await res.json();
+            const usdaFood: USDAFood = await res.json();
 
-            food = json; // todo: transform response
+            food = mapFood(usdaFood);
 
             console.log(food);
 
@@ -153,7 +194,7 @@ export function useUsdaClient() {
         }
                 
         return food;
-    };
+    }
 
     return {fetchFdcId, isBusy};
 }

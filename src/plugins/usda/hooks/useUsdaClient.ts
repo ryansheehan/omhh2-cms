@@ -1,6 +1,6 @@
 import { useEffect, useReducer, useState } from 'react';
 // import { useSanityClient } from '../../../hooks/useSanityClient';
-import type {Food, Nutrient, Portion, FoodSource} from '../schemas/food';
+import {Food, foodType, Nutrient, Portion, FoodSource} from '../schemas/food';
 
 enum ClientState {
     uninitialized = 'uninitialized', 
@@ -131,14 +131,18 @@ function mapFoodSource(dataType: string): FoodSource {
 }
 
 function mapFood({fdcId, ndbNumber, description, foodNutrients, foodPortions, publicationDate, dataType}: USDAFood) {
+    const fdcid = fdcId.toString();
     const food: Food = {
-        fdcid: fdcId.toString(),
+        _id: fdcid,
+        _type: foodType,
+        fdcid,
         ndbNumber: ndbNumber?.toString() ?? '',
         description,
         usdaPublicationDate: publicationDate,
         source: mapFoodSource(dataType),
         portions: foodPortions?.map(({amount, gramWeight, measureUnit, modifier}) => {
             const portion: Portion = {
+                _key: `${measureUnit}${modifier?`-${modifier}`:''}`,
                 amount, gramWeight, modifier, 
                 unit: measureUnit.abbreviation,
                 portionDescription: '',
@@ -149,10 +153,13 @@ function mapFood({fdcId, ndbNumber, description, foodNutrients, foodPortions, pu
             .map(({amount, nutrient: nutrientDetail}) => {
                 const {name, unitName} = nutrientDetail;
                 const nutrient: Nutrient = {
+                    _key: name,
                     amount, unitName, name,
                 };
                 return nutrient;
-            }) ?? [],
+            })
+            .sort((a, b) => a.name.localeCompare(b.name)) 
+            ?? [],
     }
     return food;
 }

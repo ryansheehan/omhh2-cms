@@ -1,57 +1,73 @@
-import {ChangeEvent, FC, useCallback, useState} from 'react';
+import {ChangeEvent, FC, useCallback, useState, useRef} from 'react';
 import {SearchIcon} from '@sanity/icons';
 import { useUsdaClient } from '../hooks/useUsdaClient';
 import {
     Box, Flex, TextInput, 
     Button, Label, Stack,
-    Spinner,
+    Spinner, Card, Text,
+    Container, useToast
 } from '@sanity/ui';
+import { Food } from '../schemas/food';
+import {FoodDisplay} from './food-display';
+import { AddFoodButton } from './import-food-button';
 
 const usdaApiKey = import.meta.env.SANITY_STUDIO_USDA_API_KEY;
 
-const USDALookup = () => {
+const USDALookup: FC = () => {
     const {fetchFdcId, isBusy} = useUsdaClient(usdaApiKey);
     const [fdcid, setFdcid] = useState('');
+    const [food, setFood] = useState<Food|null>(null);
+    const textInputRef = useRef<HTMLInputElement>(null);
 
     const handleFdcidChange = useCallback(({target}: ChangeEvent<HTMLInputElement>) => {
         setFdcid(target.value.trim());
     }, [setFdcid]);
 
     const handleFindFdcid = useCallback(async () => {
-        const food = await fetchFdcId(fdcid);
+        const fetchedFood = await fetchFdcId(fdcid);
 
-        if (!food) {
+        if (!fetchedFood) {
             throw new Error('unable to find food');
         }
 
-        console.log('got food', food);
+        console.log('got food', fetchedFood);
 
-    }, [fdcid, fetchFdcId])
+        setFood(fetchedFood);
+
+    }, [fdcid, fetchFdcId]);
+
+    const toast = useToast();
+    const handleAddCallback = useCallback(({description}:Food) => {
+        toast.push({
+            closable: true,
+            title: `Added ${description}`,
+        });
+        setFood(null);
+        const textInput = textInputRef.current!;
+        textInput.value = '';
+    }, [textInputRef, toast, setFood]);
 
     return (
         <Box padding={4} flex={1}>
-            <Flex justify="center" align="center" gap={2}>
-                <Flex direction="column" align="flex-end" gap={1}>
-                    <TextInput placeholder='FDC ID' onChange={handleFdcidChange}/>
-                    <Label muted={true} size={2}>
-                        <a href="https://fdc.nal.usda.gov/index.html" rel="noreferrer" target="_blank">USDA Food Search</a>
-                    </Label>
-                </Flex>
-                { isBusy ? 
-                    <Spinner muted /> : 
-                    <Button 
-                        icon={SearchIcon} 
+            <Flex direction="column" align="flex-end" gap={2}>
+                <Flex justify="flex-end" align="flex-start" gap={2}>
+                    <Flex direction="column" align="flex-end" gap={1}>
+                        <TextInput ref={textInputRef} placeholder='FDC ID' onChange={handleFdcidChange}/>
+                        <Label muted={true} size={2}>
+                            <a href="https://fdc.nal.usda.gov/index.html" rel="noreferrer" target="_blank">Lookup FDC ID</a>
+                        </Label>
+                    </Flex>
+                    <Button onClick={handleFindFdcid}
+                        icon={isBusy ? <Spinner muted/> : SearchIcon} 
+                        disabled={isBusy}                
                         text="Search" 
                         tone="primary" 
                         mode="ghost" 
-                        disabled={!fdcid}
-                        onClick={handleFindFdcid}
-                    />
-                }
+                    />                
+                </Flex>
+                <AddFoodButton food={food} addCallback={handleAddCallback} />
             </Flex>
-            <Stack>
-                            
-            </Stack>
+            { food &&  <FoodDisplay food={food} /> }
         </Box>
     )
 }

@@ -7,7 +7,7 @@ import usdaLookup from './components/usda-lookup';
 
 const tool: Tool = {
     name: 'usda',
-    title: 'USDA Lookup',
+    title: 'USDA',
     icon: LemonIcon,
     component: usdaLookup
 }

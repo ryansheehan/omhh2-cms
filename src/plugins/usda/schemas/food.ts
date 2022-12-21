@@ -1,5 +1,6 @@
 import {defineField, defineType} from 'sanity'
 import {LemonIcon} from '@sanity/icons';
+import type {Model} from './base';
 
 // import {FdcIdInput} from '../components/fdcid-input';
 
@@ -20,7 +21,10 @@ export type FoodSource = 'custom'
     | 'sub_sample_food'
     | 'survey_fndds_food';
 
-export interface Food {
+export type FoodType = 'food';
+export const foodType = 'food';
+
+export interface Food extends Model<FoodType> {
     description: string;
     fdcid: string;
     ndbNumber: string;
@@ -30,8 +34,9 @@ export interface Food {
     usdaPublicationDate: string;
 }
 
+
 export default defineType({
-    name: 'food',
+    name: foodType,
     title: 'Food',
     type: 'document',
     icon: LemonIcon,

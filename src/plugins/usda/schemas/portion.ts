@@ -1,6 +1,7 @@
 import {defineField, defineType} from 'sanity';
+import { ArrayItemBase } from './base';
 
-export interface Portion {
+export interface Portion extends ArrayItemBase {
     amount: number;
     unit: string;
     modifier: string;

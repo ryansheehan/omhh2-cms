@@ -27,3 +27,6 @@
 
 # sample data no-need to commit
 sample-usda-food/
+
+# environment variables
+.env.*

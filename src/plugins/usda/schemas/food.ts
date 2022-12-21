@@ -1,5 +1,7 @@
 import {defineField, defineType} from 'sanity'
-import {FdcIdInput} from '../components/fdcid-input';
+import {LemonIcon} from '@sanity/icons';
+
+// import {FdcIdInput} from '../components/fdcid-input';
 
 import type {Nutrient} from './nutrient';
 export type {Nutrient} from './nutrient';
@@ -21,6 +23,7 @@ export type FoodSource = 'custom'
 export interface Food {
     description: string;
     fdcid: string;
+    ndbNumber: string;
     source: FoodSource;
     portions: Portion[];
     nutrients: Nutrient[];
@@ -31,6 +34,7 @@ export default defineType({
     name: 'food',
     title: 'Food',
     type: 'document',
+    icon: LemonIcon,
     fields: [
         defineField({
             name: 'description',
@@ -42,10 +46,17 @@ export default defineType({
             name: 'fdcid',
             title: 'FDC ID',
             type: 'string',
-            description: 'FDC ID in the USDA database',
-            components: {
-                input: FdcIdInput,
-            }
+            description: 'FDC ID in the USDA database',            
+            // components: {
+            //     input: FdcIdInput,
+            // }
+        }),
+
+        defineField({
+            name: 'ndbNumber',
+            title: 'NDB Number',
+            type: 'string',
+            description: 'NDB Number in the USDA database',
         }),
 
         defineField({

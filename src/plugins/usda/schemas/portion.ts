@@ -1,6 +1,10 @@
 import {defineField, defineType} from 'sanity';
 import { ArrayItemBase } from './base';
 
+export function genKey({unit, modifier}: Pick<Portion, 'unit' | 'modifier'>) {
+    return `${unit}${modifier ? `-${modifier}` : ''}`;
+}
+
 export interface Portion extends ArrayItemBase {
     amount: number;
     unit: string;

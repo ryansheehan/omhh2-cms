@@ -1,6 +1,7 @@
 import { useEffect, useReducer, useState } from 'react';
 // import { useSanityClient } from '../../../hooks/useSanityClient';
 import {Food, foodType, Nutrient, Portion, FoodSource} from '../schemas/food';
+import { genKey as genPortionKey } from '../schemas/portion';
 
 enum ClientState {
     uninitialized = 'uninitialized', 
@@ -142,7 +143,7 @@ function mapFood({fdcId, ndbNumber, description, foodNutrients, foodPortions, pu
         source: mapFoodSource(dataType),
         portions: foodPortions?.map(({amount, gramWeight, measureUnit, modifier}) => {
             const portion: Portion = {
-                _key: `${measureUnit}${modifier?`-${modifier}`:''}`,
+                _key: genPortionKey({unit: measureUnit.abbreviation, modifier}),
                 amount, gramWeight, modifier, 
                 unit: measureUnit.abbreviation,
                 portionDescription: '',
@@ -192,6 +193,11 @@ export function useUsdaClient(apiKey: string) {
 
         try {
             const res = await fetch(url);
+
+            if (res.status === 404) {
+                return null;
+            }
+
             const usdaFood: USDAFood = await res.json();
             
             food = mapFood(usdaFood);

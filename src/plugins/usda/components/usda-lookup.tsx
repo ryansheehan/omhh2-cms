@@ -67,7 +67,7 @@ const USDALookup: FC = () => {
                 </Flex>
                 <AddFoodButton food={food} addCallback={handleAddCallback} />
             </Flex>
-            { food &&  <FoodDisplay food={food} /> }
+            { food &&  <FoodDisplay food={food} /> }            
         </Box>
     )
 }
